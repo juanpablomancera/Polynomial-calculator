@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Polynomial calculator</title>
+</head>
+<body>
+    <h1>Second degree polynomial calculator</h1>
+
+    <label>a:</label>
+    <input type="number" id="a">
+
+    <label>b:</label>
+    <input type="number" id="b">
+
+    <label>c:</label>
+    <input type="number" id="c">
+
+    <label>x:</label>
+    <input type="number" id="x">
+
+    <button id="calculate">Calculate</button>
+    <div id="showResult"></div>
+
+    <script type="text/javascript">
+        let calcular = document.getElementById("calculate")
+        calcular.addEventListener("click", enviarCalculoRequest)
+
+        let xhReq = new XMLHttpRequest();
+
+        function enviarCalculoRequest(){
+            let data = {
+                a: 0,
+                b:0,
+                c:0,
+                x:0
+            }
+
+            let a = document.getElementById("a")
+            let b = document.getElementById("b")
+            let c = document.getElementById("c")
+            let x = document.getElementById("x")
+
+            data.a = a.value
+            data.b = b.value
+            data.c = c.value
+            data.x = x.value
+
+            xhReq.open("POST","http://localhost:3000/ajax",true)
+            xhReq.setRequestHeader("content-type", "application/json")
+            xhReq.onload = mostrarValor
+            xhReq.send(JSON.stringify(data))
+
+            function mostrarValor(){
+                if (xhReq.status === 200){
+                    let data = JSON.parse(xhReq.responseText)
+                    let showResult = document.getElementById("showResult")
+                    if(data.status == "ok"){
+                        const response = document.createElement("p");
+                        const text = document.createTextNode(
+                            `f(x) = ${data.a}x² + ${data.b}x + ${data.c}; f
+                            (${data.x}) = ${data.result}`
+                        )
+                        response.appendChild(text)
+                        showResult.appendChild(response)
+
+                    }
+                    else{
+                        const response = document.createElement("p");
+                        const text = document.createTextNode("An error has occurred")
+                        response.appendChild(text)
+                        showResult.appendChild(response)
+                    }
+                }
+            }
+        }
+
+    </script>
+</body>
+</html>
